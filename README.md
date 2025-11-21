@@ -1,2 +1,2 @@
 # AlgoVerse
-The best hackathon team to ever exist.
+The most dedicated hackathon team since nov 21st, 2025
