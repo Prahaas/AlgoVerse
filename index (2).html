@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Store Finder - BIT</title>
+    <style>
+        :root {
+            --color-primary: #32b48d;
+            --color-primary-hover: #29967a;
+            --color-background: #f8f9fa;
+            --color-surface: #ffffff;
+            --color-text: #1a1a1a;
+            --color-text-secondary: #666;
+            --color-border: #e0e0e0;
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 400px;
+            background: rgba(239, 68, 68, 0.12);
+            z-index: 0;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 80px;
+            background: rgba(239, 68, 68, 0.12);
+            z-index: 0;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        .container, header, .login-screen, .main-app {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #2c9e7a 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .login-screen, .main-app {
+            display: none;
+        }
+
+        .login-screen.active, .main-app.active {
+            display: block;
+        }
+
+        .login-card {
+            max-width: 400px;
+            margin: 60px auto;
+            background: var(--color-surface);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .login-card h2 {
+            margin-bottom: 24px;
+            color: var(--color-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="email"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--color-text);
+            margin-left: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .location-controls {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .location-row {
+            display: flex;
+            gap: 12px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .location-row .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 0;
+        }
+
+        .location-status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .location-status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .location-status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-box {
+            margin-bottom: 24px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid var(--color-border);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .card {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: var(--color-primary);
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 4px 4px 4px 0;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .detail-view {
+            display: none;
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .detail-view.active {
+            display: block;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .detail-header h2 {
+            color: var(--color-primary);
+            font-size: 24px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: var(--color-background);
+            border-radius: 8px;
+        }
+
+        .info-item label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .inventory-list {
+            margin-top: 24px;
+        }
+
+        .inventory-list h3 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--color-background);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .inventory-item .medicine-info {
+            flex: 1;
+        }
+
+        .inventory-item .medicine-name {
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .inventory-item .medicine-generic {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .inventory-item .quantity {
+            font-weight: 600;
+            color: var(--color-success);
+            font-size: 15px;
+        }
+
+        .user-info {
+            background: var(--color-surface);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info .user-details {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .distance-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .location-row {
+                flex-direction: column;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .detail-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen active" id="loginScreen">
+        <header>
+            <h1>🏥 Medical Store Finder</h1>
+            <p>Bangalore Institute of Technology</p>
+        </header>
+        <div style="text-align: center; padding: 20px; margin: 20px auto; max-width: 600px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <p style="font-size: 18px; font-style: italic; margin: 0; line-height: 1.6;">"The greatest wealth is health" - Virgil</p>
+        </div>
+        <div class="login-card">
+            <h2>Welcome Back</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="emailInput">Email Address</label>
+                    <input type="email" id="emailInput" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="main-app" id="mainApp">
+        <header>
+            <h1>🏥 Medical Store Finder</h1>
+            <p>Find medicines at nearby stores</p>
+        </header>
+
+        <div class="container">
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div>
+                        <div style="font-weight: 500;" id="userName">User</div>
+                        <div style="font-size: 13px; color: var(--color-text-secondary);" id="userEmail">user@example.com</div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-small" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Location Controls -->
+            <div class="location-controls">
+                <h3 style="margin-bottom: 16px;">📍 Location Settings</h3>
+                <div style="padding: 12px; background: #fef3c7; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: #92400e;">
+                    <strong>💡 Tip:</strong> For location to work, make sure you allow location access when your browser asks for permission. If it doesn't work, check your browser's site settings.
+                </div>
+                <div class="location-row">
+                    <div class="form-group">
+                        <label for="radiusInput">Search Radius (km)</label>
+                        <input type="number" id="radiusInput" value="5" min="1" max="50" step="0.5">
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="fetchLocation()">
+                        <span id="locationBtnText">Get My Location</span>
+                    </button>
+                </div>
+                <div id="locationStatus"></div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('stores')">Nearby Stores</button>
+                <button class="tab" onclick="switchTab('medicines')">Search Medicines</button>
+            </div>
+
+            <!-- Stores Tab -->
+            <div class="tab-content active" id="storesTab">
+                <div class="search-box">
+                    <input type="text" id="storeSearch" placeholder="🔍 Search stores by name, area..." onkeyup="searchStores()">
+                </div>
+                <div id="storesList"></div>
+                <div id="storeDetail" class="detail-view"></div>
+            </div>
+
+            <!-- Medicines Tab -->
+            <div class="tab-content" id="medicinesTab">
+                <div class="search-box">
+                    <input type="text" id="medicineSearch" placeholder="🔍 Search medicines by name, category..." onkeyup="searchMedicines()">
+                </div>
+                <div id="medicinesList"></div>
+                <div id="medicineDetail" class="detail-view"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data from CSV files
+        const stores = [
+            {id: 'ST001', name: 'Apollo Pharmacy', address: 'no g, 15, Susheela Rd, near Karnataka Bank - Minerva Circle Branch, Doddamavalli, Mavalli, Bengaluru, Karnataka 560004', area: 'Mavalli', phone: '7942813810', hours: 'Open 24 hours', lat: 12.9462, lng: 77.5820},
+            {id: 'ST002', name: 'Sree Manjunatha Medicals', address: 'Vanivilas Road, VV Puram', area: 'VV Puram', phone: '9876543210', hours: '08 AM - 10 PM', lat: 12.9445, lng: 77.5772},
+            {id: 'ST003', name: 'Pradhan Mantri Jan Aushadhi', address: 'Near Pobbathi, VV Puram, Basavanagudi', area: 'VV Puram', phone: '9876543211', hours: '9 AM - 9PM', lat: 12.9438, lng: 77.5765},
+            {id: 'ST004', name: 'Mandya Medicals', address: 'Basavanagudi, Shankarapuram area', area: 'Basavanagudi', phone: '9876543212', hours: 'Open 24 hours', lat: 12.9421, lng: 77.5743},
+            {id: 'ST005', name: 'Bhaskar Medicals', address: 'VV Puram, Basavanagudi', area: 'VV Puram', phone: '9876543213', hours: '8 AM - 11 PM', lat: 12.9440, lng: 77.5768},
+            {id: 'ST006', name: 'HealthPlus Pharmacy', address: 'JP Nagar 7th Phase, Bangalore', area: 'JP Nagar', phone: '9876543214', hours: '7 AM - 11 PM', lat: 12.9010, lng: 77.5765},
+            {id: 'ST007', name: 'MedLife Store', address: 'Jayanagar 4th Block, Bangalore', area: 'Jayanagar', phone: '9876543215', hours: 'Open 24 hours', lat: 12.9250, lng: 77.5950},
+            {id: 'ST008', name: 'Guardian Pharmacy', address: 'BTM Layout 2nd Stage, Bangalore', area: 'BTM Layout', phone: '9876543216', hours: '8 AM - 10 PM', lat: 12.9165, lng: 77.6101}
+        ];
+
+        const medicines = [
+            {id: 'MED001', name: 'Dolo 650', generic: 'Paracetamol 650mg', category: 'Painkiller', form: 'Tablet'},
+            {id: 'MED002', name: 'Calpol 500', generic: 'Paracetamol 500mg', category: 'Painkiller', form: 'Tablet'},
+            {id: 'MED003', name: 'Azithral 500', generic: 'Azithromycin 500mg', category: 'Antibiotic', form: 'Tablet'},
+            {id: 'MED004', name: 'Augmentin 625', generic: 'Amoxicillin + Clavulanic Acid', category: 'Antibiotic', form: 'Tablet'},
+            {id: 'MED005', name: 'Metformin 500', generic: 'Metformin', category: 'Diabetes', form: 'Tablet'},
+            {id: 'MED006', name: 'Glycomet GP 1', generic: 'Metformin + Glimepiride', category: 'Diabetes', form: 'Tablet'},
+            {id: 'MED007', name: 'Telma 40', generic: 'Telmisartan', category: 'BP', form: 'Tablet'},
+            {id: 'MED008', name: 'Atorva 10', generic: 'Atorvastatin 10mg', category: 'Cholesterol', form: 'Tablet'},
+            {id: 'MED009', name: 'Pantocid 40', generic: 'Pantoprazole 40mg', category: 'Gastric', form: 'Tablet'},
+            {id: 'MED010', name: 'Becosules', generic: 'Vitamin B Complex', category: 'Vitamin', form: 'Capsule'},
+            {id: 'MED011', name: 'Combiflam', generic: 'Ibuprofen + Paracetamol', category: 'Painkiller', form: 'Tablet'},
+            {id: 'MED012', name: 'Cetirizine 10', generic: 'Cetirizine', category: 'Allergy', form: 'Tablet'},
+            {id: 'MED013', name: 'Disprin', generic: 'Aspirin', category: 'Painkiller', form: 'Tablet'},
+            {id: 'MED014', name: 'Pan D', generic: 'Pantoprazole + Domperidone', category: 'Gastric', form: 'Capsule'},
+            {id: 'MED015', name: 'Ciprofloxacin 500', generic: 'Ciprofloxacin', category: 'Antibiotic', form: 'Tablet'},
+            {id: 'MED016', name: 'Crocin Advance', generic: 'Paracetamol 500mg', category: 'Painkiller', form: 'Tablet'},
+            {id: 'MED017', name: 'Azee 500', generic: 'Azithromycin', category: 'Antibiotic', form: 'Tablet'},
+            {id: 'MED018', name: 'Omnacortil 10', generic: 'Prednisolone', category: 'Steroid', form: 'Tablet'},
+            {id: 'MED019', name: 'Sinarest', generic: 'Paracetamol + Chlorpheniramine', category: 'Cold & Flu', form: 'Tablet'},
+            {id: 'MED020', name: 'Vitamin D3', generic: 'Cholecalciferol', category: 'Vitamin', form: 'Capsule'}
+        ];
+
+        const inventory = [
+            {id: 'INV001', storeId: 'ST001', medicineId: 'MED001', quantity: 40, lastUpdated: '2025-11-21'},
+            {id: 'INV002', storeId: 'ST001', medicineId: 'MED003', quantity: 25, lastUpdated: '2025-11-21'},
+            {id: 'INV003', storeId: 'ST001', medicineId: 'MED005', quantity: 30, lastUpdated: '2025-11-21'},
+            {id: 'INV004', storeId: 'ST001', medicineId: 'MED007', quantity: 15, lastUpdated: '2025-11-21'},
+            {id: 'INV005', storeId: 'ST001', medicineId: 'MED016', quantity: 35, lastUpdated: '2025-11-21'},
+            {id: 'INV006', storeId: 'ST002', medicineId: 'MED001', quantity: 50, lastUpdated: '2025-11-21'},
+            {id: 'INV007', storeId: 'ST002', medicineId: 'MED002', quantity: 35, lastUpdated: '2025-11-21'},
+            {id: 'INV008', storeId: 'ST002', medicineId: 'MED004', quantity: 20, lastUpdated: '2025-11-21'},
+            {id: 'INV009', storeId: 'ST002', medicineId: 'MED019', quantity: 28, lastUpdated: '2025-11-21'},
+            {id: 'INV010', storeId: 'ST003', medicineId: 'MED005', quantity: 60, lastUpdated: '2025-11-21'},
+            {id: 'INV011', storeId: 'ST003', medicineId: 'MED006', quantity: 45, lastUpdated: '2025-11-21'},
+            {id: 'INV012', storeId: 'ST003', medicineId: 'MED009', quantity: 30, lastUpdated: '2025-11-21'},
+            {id: 'INV013', storeId: 'ST003', medicineId: 'MED020', quantity: 40, lastUpdated: '2025-11-21'},
+            {id: 'INV014', storeId: 'ST004', medicineId: 'MED001', quantity: 55, lastUpdated: '2025-11-21'},
+            {id: 'INV015', storeId: 'ST004', medicineId: 'MED008', quantity: 25, lastUpdated: '2025-11-21'},
+            {id: 'INV016', storeId: 'ST004', medicineId: 'MED011', quantity: 40, lastUpdated: '2025-11-21'},
+            {id: 'INV017', storeId: 'ST004', medicineId: 'MED017', quantity: 22, lastUpdated: '2025-11-21'},
+            {id: 'INV018', storeId: 'ST005', medicineId: 'MED003', quantity: 30, lastUpdated: '2025-11-21'},
+            {id: 'INV019', storeId: 'ST005', medicineId: 'MED012', quantity: 50, lastUpdated: '2025-11-21'},
+            {id: 'INV020', storeId: 'ST005', medicineId: 'MED018', quantity: 18, lastUpdated: '2025-11-21'},
+            {id: 'INV021', storeId: 'ST006', medicineId: 'MED001', quantity: 45, lastUpdated: '2025-11-21'},
+            {id: 'INV022', storeId: 'ST006', medicineId: 'MED009', quantity: 32, lastUpdated: '2025-11-21'},
+            {id: 'INV023', storeId: 'ST006', medicineId: 'MED011', quantity: 38, lastUpdated: '2025-11-21'},
+            {id: 'INV024', storeId: 'ST007', medicineId: 'MED002', quantity: 42, lastUpdated: '2025-11-21'},
+            {id: 'INV025', storeId: 'ST007', medicineId: 'MED005', quantity: 55, lastUpdated: '2025-11-21'},
+            {id: 'INV026', storeId: 'ST007', medicineId: 'MED010', quantity: 27, lastUpdated: '2025-11-21'},
+            {id: 'INV027', storeId: 'ST008', medicineId: 'MED004', quantity: 33, lastUpdated: '2025-11-21'},
+            {id: 'INV028', storeId: 'ST008', medicineId: 'MED012', quantity: 41, lastUpdated: '2025-11-21'},
+            {id: 'INV029', storeId: 'ST008', medicineId: 'MED015', quantity: 29, lastUpdated: '2025-11-21'}
+        ];
+
+        const users = [
+            {email: 'yourname@example.com', name: 'Your Name', role: 'Admin'},
+            {email: 'teammate@example.com', name: 'Teammate Name', role: 'Admin'},
+            {email: 'testuser@example.com', name: 'Test User', role: 'User'}
+        ];
+
+        let currentUser = null;
+        let userLocation = null;
+        let currentRadius = 5;
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value.toLowerCase();
+            const user = users.find(u => u.email.toLowerCase() === email);
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('mainApp').classList.add('active');
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+                displayStores();
+                displayMedicines();
+            } else {
+                alert('Invalid email. Please use one of the registered emails:\n- yourname@example.com\n- teammate@example.com\n- testuser@example.com');
+            }
+        });
+
+        function logout() {
+            currentUser = null;
+            userLocation = null;
+            document.getElementById('mainApp').classList.remove('active');
+            document.getElementById('loginScreen').classList.add('active');
+            document.getElementById('emailInput').value = '';
+            document.getElementById('locationStatus').innerHTML = '';
+        }
+
+        // Location functionality
+        function fetchLocation() {
+            const btn = document.getElementById('locationBtnText');
+            const statusDiv = document.getElementById('locationStatus');
+            
+            btn.innerHTML = '<span class="loading"></span> Getting location...';
+            
+            if ('geolocation' in navigator) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                };
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        currentRadius = parseFloat(document.getElementById('radiusInput').value);
+                        
+                        statusDiv.innerHTML = `<div class="location-status success">✓ Location detected: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)} | Radius: ${currentRadius} km</div>`;
+                        btn.textContent = 'Update Location';
+                        displayStores();
+                    },
+                    (error) => {
+                        let errorMsg = 'Unable to get location. ';
+                        let helpText = '';
+                        
+                        if (error.code === 1) {
+                            errorMsg += 'Permission denied. ';
+                            helpText = 'Please allow location access in your browser settings and try again.';
+                        } else if (error.code === 2) {
+                            errorMsg += 'Position unavailable. ';
+                            helpText = 'Your device cannot determine location. Try using a device with GPS or enabling location services.';
+                        } else if (error.code === 3) {
+                            errorMsg += 'Request timeout. ';
+                            helpText = 'Location request took too long. Please try again with a stronger signal.';
+                        } else {
+                            errorMsg += 'Unknown error. ';
+                            helpText = 'Please check your device location settings and try again.';
+                        }
+                        
+                        statusDiv.innerHTML = `<div class="location-status error">✗ ${errorMsg}<br><small>${helpText}</small></div>`;
+                        btn.textContent = 'Try Again';
+                        
+                        // Show all stores without distance filtering
+                        userLocation = null;
+                        displayStores();
+                    },
+                    options
+                );
+            } else {
+                statusDiv.innerHTML = '<div class="location-status error">✗ Geolocation not supported by your browser. Please use a modern browser with location services.</div>';
+                btn.textContent = 'Get My Location';
+            }
+        }
+
+        // Calculate distance between two coordinates (Haversine formula)
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Display stores
+        function displayStores(searchTerm = '') {
+            let filteredStores = stores;
+            
+            // Filter by search term
+            if (searchTerm) {
+                filteredStores = filteredStores.filter(store => 
+                    store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    store.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    store.address.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            // Calculate distances and filter by radius
+            filteredStores = filteredStores.map(store => ({
+                ...store,
+                distance: userLocation ? calculateDistance(userLocation.lat, userLocation.lng, store.lat, store.lng) : null
+            }));
+
+            if (userLocation) {
+                filteredStores = filteredStores.filter(store => store.distance <= currentRadius);
+                filteredStores.sort((a, b) => a.distance - b.distance);
+            }
+
+            const storesList = document.getElementById('storesList');
+            
+            if (filteredStores.length === 0) {
+                storesList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📍</div>
+                        <h3>No stores found</h3>
+                        <p>Try increasing your search radius or adjust filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            storesList.innerHTML = filteredStores.map(store => `
+                <div class="card" onclick="showStoreDetail('${store.id}')">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <h3>${store.name}</h3>
+                        ${store.distance ? `<span class="distance-badge">${store.distance.toFixed(1)} km</span>` : ''}
+                    </div>
+                    <p style="color: var(--color-text-secondary); margin: 8px 0;">${store.address}</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.name + ', ' + store.address)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; margin: 8px 0; padding: 8px 16px; background: #4285f4; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 500;">📍 View on Map</a>
+                    <div class="card-meta">
+                        <span>📍 ${store.area}</span>
+                        <span>📞 ${store.phone}</span>
+                        <span>🕒 ${store.hours}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchStores() {
+            const searchTerm = document.getElementById('storeSearch').value;
+            displayStores(searchTerm);
+        }
+
+        function showStoreDetail(storeId) {
+            const store = stores.find(s => s.id === storeId);
+            const storeInventory = inventory.filter(i => i.storeId === storeId);
+            
+            const distance = userLocation ? calculateDistance(userLocation.lat, userLocation.lng, store.lat, store.lng) : null;
+
+            const detailHtml = `
+                <div class="detail-header">
+                    <div>
+                        <h2>${store.name}</h2>
+                        ${distance ? `<span class="distance-badge">${distance.toFixed(1)} km away</span>` : ''}
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="closeStoreDetail()">✕ Close</button>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Address</label>
+                        <div class="value">${store.address}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Area</label>
+                        <div class="value">${store.area}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Phone</label>
+                        <div class="value">${store.phone}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Operating Hours</label>
+                        <div class="value">${store.hours}</div>
+                    </div>
+                </div>
+
+                <div class="inventory-list">
+                    <h3>Available Medicines (${storeInventory.length})</h3>
+                    ${storeInventory.length > 0 ? storeInventory.map(item => {
+                        const medicine = medicines.find(m => m.id === item.medicineId);
+                        return `
+                            <div class="inventory-item">
+                                <div class="medicine-info">
+                                    <div class="medicine-name">${medicine.name}</div>
+                                    <div class="medicine-generic">${medicine.generic} • ${medicine.category}</div>
+                                </div>
+                                <div class="quantity">${item.quantity} units</div>
+                            </div>
+                        `;
+                    }).join('') : '<p style="color: var(--color-text-secondary);">No medicines in stock</p>'}
+                </div>
+            `;
+
+            document.getElementById('storesList').style.display = 'none';
+            document.querySelector('#storesTab .search-box').style.display = 'none';
+            document.getElementById('storeDetail').innerHTML = detailHtml;
+            document.getElementById('storeDetail').classList.add('active');
+        }
+
+        function closeStoreDetail() {
+            document.getElementById('storeDetail').classList.remove('active');
+            document.getElementById('storesList').style.display = 'block';
+            document.querySelector('#storesTab .search-box').style.display = 'block';
+        }
+
+        // Display medicines
+        function displayMedicines(searchTerm = '') {
+            let filteredMedicines = medicines;
+            
+            if (searchTerm) {
+                filteredMedicines = filteredMedicines.filter(med => 
+                    med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    med.generic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    med.category.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            const medicinesList = document.getElementById('medicinesList');
+            
+            if (filteredMedicines.length === 0) {
+                medicinesList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 16px;">💊</div>
+                        <h3>No medicines found</h3>
+                        <p>Try different search terms</p>
+                    </div>
+                `;
+                return;
+            }
+
+            medicinesList.innerHTML = filteredMedicines.map(med => {
+                const availableStores = inventory.filter(i => i.medicineId === med.id).length;
+                return `
+                    <div class="card" onclick="showMedicineDetail('${med.id}')">
+                        <h3>${med.name}</h3>
+                        <p style="color: var(--color-text-secondary); margin: 8px 0;">${med.generic}</p>
+                        <div style="margin-top: 8px;">
+                            <span class="badge badge-primary">${med.category}</span>
+                            <span class="badge badge-success">${med.form}</span>
+                            <span class="badge badge-warning">Available at ${availableStores} stores</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function searchMedicines() {
+            const searchTerm = document.getElementById('medicineSearch').value;
+            displayMedicines(searchTerm);
+        }
+
+        function showMedicineDetail(medicineId) {
+            const medicine = medicines.find(m => m.id === medicineId);
+            const medicineInventory = inventory.filter(i => i.medicineId === medicineId);
+            
+            const detailHtml = `
+                <div class="detail-header">
+                    <div>
+                        <h2>${medicine.name}</h2>
+                        <p style="color: var(--color-text-secondary); margin-top: 4px;">${medicine.generic}</p>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="closeMedicineDetail()">✕ Close</button>
+                </div>
+                
+                <div style="margin-bottom: 24px;">
+                    <span class="badge badge-primary">${medicine.category}</span>
+                    <span class="badge badge-success">${medicine.form}</span>
+                </div>
+
+                <div class="inventory-list">
+                    <h3>Available at These Stores (${medicineInventory.length})</h3>
+                    ${medicineInventory.length > 0 ? medicineInventory.map(item => {
+                        const store = stores.find(s => s.id === item.storeId);
+                        const distance = userLocation ? calculateDistance(userLocation.lat, userLocation.lng, store.lat, store.lng) : null;
+                        return `
+                            <div class="inventory-item" style="cursor: pointer;" onclick="switchToStoreDetail('${store.id}')">
+                                <div class="medicine-info">
+                                    <div class="medicine-name">${store.name}</div>
+                                    <div class="medicine-generic">${store.area} • ${store.phone}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="quantity">${item.quantity} units</div>
+                                    ${distance ? `<div style="font-size: 12px; color: var(--color-text-secondary);">${distance.toFixed(1)} km</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('') : '<p style="color: var(--color-text-secondary);">Not available at any store</p>'}
+                </div>
+            `;
+
+            document.getElementById('medicinesList').style.display = 'none';
+            document.querySelector('#medicinesTab .search-box').style.display = 'none';
+            document.getElementById('medicineDetail').innerHTML = detailHtml;
+            document.getElementById('medicineDetail').classList.add('active');
+        }
+
+        function closeMedicineDetail() {
+            document.getElementById('medicineDetail').classList.remove('active');
+            document.getElementById('medicinesList').style.display = 'block';
+            document.querySelector('#medicinesTab .search-box').style.display = 'block';
+        }
+
+        function switchToStoreDetail(storeId) {
+            closeMedicineDetail();
+            switchTab('stores');
+            setTimeout(() => showStoreDetail(storeId), 100);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            
+            if (tabName === 'stores') {
+                document.getElementById('storesTab').classList.add('active');
+                closeStoreDetail();
+            } else {
+                document.getElementById('medicinesTab').classList.add('active');
+                closeMedicineDetail();
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            displayStores();
+            displayMedicines();
+        };
+    </script>
+</body>
+</html>
